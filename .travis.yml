@@ -4,4 +4,4 @@ services:
 before_install:
   - docker build -t hooandee/carioca -f Dockerfile.dev .
 script:
-  - docker run hooandee/carioca npm run test --coverage
+  - docker run -e CI=true hooandee/carioca npm run test
