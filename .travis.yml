@@ -3,7 +3,7 @@ services:
   - docker
 before_install:
   # Install Heroku CLI
-  - wget -qO- https://toolbelt.heroku.com/install.sh | sh 
+  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
   - docker build -t hooandee/carioca -f Dockerfile.dev .
   # Login to docker registries (Dockerhub + Heroku)
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -15,11 +15,11 @@ script:
 deploy:
   provider: script
   script:
-    # Push to Dockerhub
+    # 1 Push to Dockerhub
+    # 2 Push to Heroku
+    # 3 Releasing image from Heroku Container Servers.
     docker push hooandee/carioca;
-    # Push to Heroku
     docker push registry.heroku.com/$HEROKU_APP_NAME/web;
-    # Releasing image from Heroku Container Servers.
     heroku container:release web --app $HEROKU_APP_NAME
   on:
     branch: master
