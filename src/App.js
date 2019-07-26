@@ -9,6 +9,7 @@ class App extends React.Component {
   render() {
     return (
       <>
+        <h1>Welcome to carioca!</h1>
         <div className="App">
           <input
             onChange={event =>
