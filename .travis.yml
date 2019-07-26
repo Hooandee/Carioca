@@ -2,14 +2,24 @@ sudo: required
 services:
   - docker
 before_install:
+  # Install Heroku CLI
+  - wget -qO- https://toolbelt.heroku.com/install.sh | sh 
   - docker build -t hooandee/carioca -f Dockerfile.dev .
   # Login to docker registries (Dockerhub + Heroku)
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
 script:
   - docker run -e CI=true hooandee/carioca npm run test
+  # Tag the image to fit Heroku needs
+  - docker tag hooandee/carioca registry.heroku.com/$HEROKU_APP_NAME/web
 deploy:
   provider: script
   script:
     # Push to Dockerhub
     docker push hooandee/carioca;
-  branch: master
+    # Push to Heroku
+    docker push registry.heroku.com/$HEROKU_APP_NAME/web;
+    # Releasing image from Heroku Container Servers.
+    heroku container:release web --app $HEROKU_APP_NAME
+  on:
+    branch: master
