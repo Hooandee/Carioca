@@ -5,20 +5,21 @@ before_install:
   # Install Heroku CLI
   - wget -qO- https://toolbelt.heroku.com/install.sh | sh
   - docker build -t hooandee/carioca -f Dockerfile.dev .
+  - docker build -t hooandee/carioca-prod .
   # Login to docker registries (Dockerhub + Heroku)
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
 script:
   - docker run -e CI=true hooandee/carioca npm run test
   # Tag the image to fit Heroku needs
-  - docker tag hooandee/carioca registry.heroku.com/$HEROKU_APP_NAME/web
+  - docker tag hooandee/carioca-prod registry.heroku.com/$HEROKU_APP_NAME/web
 deploy:
   provider: script
   script:
     # 1 Push to Dockerhub
     # 2 Push to Heroku
     # 3 Releasing image from Heroku Container Servers.
-    docker push hooandee/carioca;
+    docker push hooandee/carioca-prod;
     docker push registry.heroku.com/$HEROKU_APP_NAME/web;
     heroku container:release web --app $HEROKU_APP_NAME
   on:
